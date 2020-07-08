@@ -66,7 +66,7 @@ class OpenGameLink:
         self.requirements = self.driver.find_element_by_xpath("//div[@class='game_area_sys_req_rightCol']/ul/ul[@class='bb_ul']").text
         
     def SaveInfo(self):
-        OpenGameLinkInfo = open("opengamelinkinfo.txt","w")
+        OpenGameLinkInfo = open("text/opengamelinkinfo.txt","w")
         
         OpenGameLinkInfo.writelines(self.game_name+"\n")
         OpenGameLinkInfo.writelines("\n")
