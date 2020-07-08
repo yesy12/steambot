@@ -1,6 +1,6 @@
 from selenium import webdriver
 from time import sleep
-from re import findall,sub
+from re import findall
 
 class SteamBot_Have:
     
@@ -36,18 +36,3 @@ class SteamBot_Have:
     
     def CloseBrowser(self):
         self.driver.close()
-    
-url_steam = "https://steamcommunity.com/id/ahsj4/games/?tab=all&sort=name"
-steam = SteamBot_Have(url_steam)
-steam.OpenBrowser()
-steam.GetLink()
-steam.CountLinks()
-steam.SaveLinks()
-steam.CloseBrowser()
-
-# url_steam = "https://steamcommunity.com/id/yesy12/games/?tab=all&sort=name"
-# steam2 = SteamBot_Have(url_steam)
-# steam2.OpenBrowser()
-# steam2.GetLink()
-# steam2.CountLinks()
-# steam2.CloseBrowser()
