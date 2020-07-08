@@ -27,7 +27,7 @@ class SteamBot_Have:
         print(len(self.links))
     
     def SaveLinks(self):
-        steamlink_have = open("text/steamlink_have.txt","w")
+        steamlink_have = open("text\steamlink_have.txt","w")
         
         for link in self.links:
             steamlink_have.write(link+"\n")
