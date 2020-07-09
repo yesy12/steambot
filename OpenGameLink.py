@@ -14,7 +14,8 @@ class OpenGameLink:
         self.url_game = url_game
         self.agecheck = False
         self.game_name = ""
-        self.requirements = ""
+        self.requirements_right = ""
+        self.requirements_left = ""
         self.game_dlc = False
         
     def OpenBrowser(self):
@@ -24,7 +25,7 @@ class OpenGameLink:
         self.driver.close()
         
     def VerifyLink(self):
-        palavra = re.search(r"agecheck",self.url_game)
+        palavra = re.search(r"agecheck",self.driver.current_url)
         if(palavra):
             self.agecheck = True
 
@@ -45,6 +46,7 @@ class OpenGameLink:
             acessToPage = self.driver.find_element_by_xpath("//a[@class='btnv6_blue_hoverfade btn_medium']")
             acessToPage.click()
             
+            self.agecheck = False
             #Cookies 
             """
             {
@@ -54,7 +56,13 @@ class OpenGameLink:
           
     def GetInfo(self):
         self.SetAge()
-        sleep(1)
+             
+        regex = "h[a-z].+/app/[0-9]+/"
+        while True:
+            link_parser = re.findall(rf"{regex}",self.driver.current_url)
+            if(self.url_game == link_parser[0]):
+                break
+        
         self.game_name = self.driver.find_element_by_class_name("apphub_AppName").text
 
         try:
@@ -63,30 +71,20 @@ class OpenGameLink:
         except:
             self.game_dlc = False
         
-        self.requirements = self.driver.find_element_by_xpath("//div[@class='game_area_sys_req_rightCol']/ul/ul[@class='bb_ul']").text
+        self.requirements_right = self.driver.find_element_by_xpath("//div[@class='game_area_sys_req_rightCol']/ul/ul[@class='bb_ul']").text
+        self.requirements_left = self.driver.find_element_by_xpath("//div[@class='game_area_sys_req_leftCol']/ul/ul[@class='bb_ul']").text
         
     def SaveInfo(self):
-        OpenGameLinkInfo = open("text\opengamelinkinfo.txt","w",encoding="UTF-8")
+        regex = "[0-9]+"
+        name_file = re.findall(rf"{regex}",self.url_game)[0]
+        OpenGameLinkInfo = open(f"text\{name_file}.txt","w",encoding="UTF-8")
         
         OpenGameLinkInfo.writelines(self.game_name+"\n")
         OpenGameLinkInfo.writelines("\n")
-        OpenGameLinkInfo.writelines(self.requirements+"\n")
+        OpenGameLinkInfo.writelines(self.requirements_left+"\n\n")
+        OpenGameLinkInfo.writelines(self.requirements_right+"\n")
         OpenGameLinkInfo.writelines("\n")
         OpenGameLinkInfo.writelines(f"DLC : {self.game_dlc}")
         
         OpenGameLinkInfo.close()
         
-        
-url_game = "https://store.steampowered.com/agecheck/app/208650/"
-#game agecheck
-# url_game = "https://store.steampowered.com/app/239200"
-#game
-# url_game = "https://store.steampowered.com/app/1248434"
-#dlc
-openGame = OpenGameLink(url_game)
-openGame.OpenBrowser()
-openGame.VerifyLink()
-openGame.GetInfo()
-openGame.SaveInfo()
-sleep(3)
-openGame.CloseBrowser()
