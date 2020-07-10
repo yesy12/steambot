@@ -1,5 +1,7 @@
-from SteamBot_Have import SteamBot_Have
-from OpenGameLink import OpenGameLink
+from functions.SteamBot_Have import SteamBot_Have
+from functions.OpenGameLink import OpenGameLink
+
+urls_games_steam = open("text/steamlink_have.txt","r")
 
 # url_steam = "https://steamcommunity.com/id/ahsj4/games/?tab=all&sort=name"
 # steam = SteamBot_Have(url_steam)
@@ -9,3 +11,22 @@ from OpenGameLink import OpenGameLink
 # steam.SaveLinks()
 # steam.CloseBrowser()
 
+# i = 1
+# for url_game_steam in urls_games_steam:
+#     openGame = OpenGameLink(url_game_steam)
+#     openGame.OpenBrowser()
+#     print(f"Index:0{i} Link: {url_game_steam}")
+#     openGame.VerifyLink()
+#     openGame.GetInfo()
+#     openGame.SaveInfo()
+#     openGame.CloseBrowser()
+#     i+=1
+    
+url_game = "https://store.steampowered.com/app/239200"
+openGame = OpenGameLink(url_game)
+openGame.OpenBrowser()
+openGame.VerifyLink()
+openGame.GetInfo()
+openGame.ParseInfo()
+openGame.SaveInfo()
+openGame.CloseBrowser()

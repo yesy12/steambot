@@ -1,2 +1,4 @@
 text/
 tutorial/
+__pycache__
+debug.log
