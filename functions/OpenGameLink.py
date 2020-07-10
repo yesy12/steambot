@@ -150,8 +150,10 @@ class OpenGameLink:
             
             requirements_minimum = regex.findall(self.requirements_minimum)[0] #Armazenamento: 5 GB
             if(self.requirements_recomend != ""):
-                requirements_recomend = regex.findall(self.requirements_recomend)[0] #Armazenamento: 5 GB
-            
+                try:
+                    requirements_recomend = regex.findall(self.requirements_recomend)[0] #Armazenamento: 5 GB
+                except:
+                    requirements_recomend = ""        
             #PART 2
             
             regex = "[0-9]+[ ]*[gm]b"
@@ -161,8 +163,11 @@ class OpenGameLink:
             
             requirements_minimum = regex.findall(requirements_minimum)[0] #5 GB
             if(self.requirements_recomend != ""):
-                requirements_recomend = regex.findall(requirements_recomend)[0] #5 GB
-
+                try:
+                    requirements_recomend = regex.findall(requirements_recomend)[0] #5 GB
+                except:
+                    requirements_recomend = ""
+                
             #PART 3
 
             regex = "[GM]B"
@@ -171,8 +176,11 @@ class OpenGameLink:
 
             requirements_minimum_unit = regex.findall(requirements_minimum)[0] #GB
             if(self.requirements_recomend != ""):
-                requirements_recomend_unit = regex.findall(requirements_recomend)[0] #GB
-            
+                try:
+                    requirements_recomend_unit = regex.findall(requirements_recomend)[0] #GB
+                except:
+                    requirements_recomend_unit = ""
+                            
             if(requirements_minimum_unit == "GB"):
                 requirements_minimum_bool_gb = True
             if(requirements_recomend_unit == "GB"):

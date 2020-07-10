@@ -3,12 +3,12 @@ from functions.OpenGameLink import OpenGameLink
 from time import sleep
 
 # url_steam_wishlist = "https://store.steampowered.com/wishlist/profiles/76561198208574821/#sort=name"
-url_steam_wishlist = "https://store.steampowered.com/wishlist/id/yesy12/#sort=name"
-steam_wishList = SteamBot_WishList(url_steam_wishlist)
-steam_wishList.OpenBrowser()
-steam_wishList.GetLinks()
-steam_wishList.SaveLinks()
-steam_wishList.CloseBrowser()
+# url_steam_wishlist = "https://store.steampowered.com/wishlist/id/yesy12/#sort=name"
+# steam_wishList = SteamBot_WishList(url_steam_wishlist)
+# steam_wishList.OpenBrowser()
+# steam_wishList.GetLinks()
+# steam_wishList.SaveLinks()
+# steam_wishList.CloseBrowser()
 
 # urls_games_steam = open("text/steamlink_wishlist.txt","r")
 
@@ -24,12 +24,12 @@ steam_wishList.CloseBrowser()
 #         openGame.SaveInfo()
 #         openGame.CloseBrowser()
 
-# url_game = "https://store.steampowered.com/app/57300"
-# openGame = OpenGameLink(url_game,0)
-# openGame.OpenBrowser()
-# openGame.VerifyLink()
-# openGame.GetInfo()
-# openGame.ParseInfoSpace()
-# openGame.ParseInfoReview()
-# openGame.SaveInfo()
-# openGame.CloseBrowser()
+url_game = "https://store.steampowered.com/app/514900/"
+openGame = OpenGameLink(url_game,0)
+openGame.OpenBrowser()
+openGame.VerifyLink()
+openGame.GetInfo()
+openGame.ParseInfoSpace()
+openGame.ParseInfoReview()
+openGame.SaveInfo()
+openGame.CloseBrowser()
