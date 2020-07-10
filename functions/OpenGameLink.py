@@ -5,7 +5,7 @@ import re
 
 class OpenGameLink:
     
-    def __init__ (self,url_game):
+    def __init__ (self,url_game,have_game=1):
         options = webdriver.ChromeOptions()
         options.add_argument("lang=pt-br")
         url_drive = executable_path=r"./../../driver/chromedriver.exe"
@@ -19,6 +19,7 @@ class OpenGameLink:
         self.url_steam_bool = False
         self.requirements_minimum = ""
         self.requirements_recomend = ""
+        self.have_game = have_game
         
     def OpenBrowser(self):
         self.driver.get(self.url_game)
@@ -93,12 +94,14 @@ class OpenGameLink:
             self.requirements_minimum = self.driver.find_element_by_xpath("//div[@class='game_area_sys_req_full']/ul/ul[@class='bb_ul']").text  
             self.requirements_recomend = ""          
     
-    def ParseInfo(self):
+    def ParseInfoSpace(self):
         if(self.url_steam_bool == False):
             
             requirements_minimum = ""
             requirements_minimum_bool_gb = False
             requirements_recomend_bool_gb = False
+            
+            requirements_recomend_unit = ""
             
             #PART 1
             
@@ -135,7 +138,7 @@ class OpenGameLink:
             
             if(requirements_minimum_unit == "GB"):
                 requirements_minimum_bool_gb = True
-            if(requirements_recomend_unit == "GB" and self.requirements_recomend != ""):
+            if(requirements_recomend_unit == "GB"):
                 requirements_recomend_bool_gb = True
             
             #PART 4
@@ -159,15 +162,22 @@ class OpenGameLink:
                     self.requirements = requirements_recomend
             else:
                 self.requirements = requirements_minimum    
+                
+
           
     def SaveInfo(self):
         regex = "[0-9]+"
         name_file = re.findall(rf"{regex}",self.url_game)[0]
-        OpenGameLinkInfo = open(f"text\games\{name_file}.txt","w",encoding="UTF-8")
+        url_path = ""
+        if(self.have_game == 1):
+            url_path = f"text\games\{name_file}.txt"
+        else:
+            url_path = f"text\whitlist\{name_file}.tex"
+        OpenGameLinkInfo = open(url_path,"w",encoding="UTF-8")
         
         OpenGameLinkInfo.writelines(self.game_name+"\n")
         OpenGameLinkInfo.writelines("\n")
-        OpenGameLinkInfo.writelines(self.requirements+"\n\n")
+        OpenGameLinkInfo.writelines(self.requirements)
         OpenGameLinkInfo.writelines("\n")
         OpenGameLinkInfo.writelines(f"DLC : {self.game_dlc}")
         
