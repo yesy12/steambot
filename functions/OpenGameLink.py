@@ -22,6 +22,7 @@ class OpenGameLink:
         self.have_game = have_game
         self.url_game_image = ""
         self.game_review = ""
+        self.price = ""
         
     def OpenBrowser(self):
         self.driver.get(self.url_game)
@@ -109,6 +110,10 @@ class OpenGameLink:
             self.game_review =game_review.get_attribute("class")
         except:
             self.game_review = ""
+    
+        if(self.have_game == 0):
+            price = self.driver.find_element_by_xpath("//div[@class='game_purchase_price price']")
+            self.price = price.text
     
     def ParseInfoReview(self):
         #game_review_summary positive = Extremamente positivas | Ligeiramente positivas | Muito positivas
@@ -210,4 +215,7 @@ class OpenGameLink:
         OpenGameLinkInfo.writelines(f"\nDLC : {self.game_dlc}")
         OpenGameLinkInfo.writelines(f"\nUrl Image: {self.url_game_image}")
         OpenGameLinkInfo.writelines(f"\nReview: {self.game_review}")
+        
+        if(self.have_game == 0):
+            OpenGameLinkInfo.writelines(f"\nPrice: {self.price}")
         OpenGameLinkInfo.close()

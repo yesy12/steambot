@@ -20,8 +20,8 @@ class SteamBot_WishList:
         self.driver.close()
         
     def GetLinks(self):
-        sleep(1.5)
-        #//*[@id="wishlist_ctn"]/div[1]/div[2]/a
+        sleep(5)
+
         links_wishList = self.driver.find_elements_by_xpath("//div[@class='wishlist_row']/div[@class='content']/a[@class='title']")
     
         regex = "htt.+store.+/app/[0-9]+"
