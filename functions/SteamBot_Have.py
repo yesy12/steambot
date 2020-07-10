@@ -11,7 +11,6 @@ class SteamBot_Have:
         
         self.url_steam = url_steam
         self.driver = webdriver.Chrome(url_drive)
-        # self.right_click = ActionChains(self.driver)
         self.links = []
         
     def OpenBrowser(self):
@@ -30,7 +29,7 @@ class SteamBot_Have:
         steamlink_have = open("text\steamlink_have.txt","w")
         
         for link in self.links:
-            steamlink_have.write(link+"\n")
+            steamlink_have.write(f"\n{link}")
             
         steamlink_have.close()
     

@@ -21,6 +21,7 @@ class OpenGameLink:
         self.requirements_recomend = ""
         self.have_game = have_game
         self.url_game_image = ""
+        self.game_review = ""
         
     def OpenBrowser(self):
         self.driver.get(self.url_game)
@@ -75,6 +76,8 @@ class OpenGameLink:
         if(self.url_steam_bool == True):
             self.game_name = f"Failed: {self.url_game}"
             self.requirements_minimum = f"FAILED: {self.url_game}"
+            self.url_game_image = ""
+            self.game_review = ""
             return 
         
         try:
@@ -94,12 +97,35 @@ class OpenGameLink:
         except:
             self.requirements_minimum = self.driver.find_element_by_xpath("//div[@class='game_area_sys_req_full']/ul/ul[@class='bb_ul']").text  
             self.requirements_recomend = ""          
+        
         try:
             url_image = self.driver.find_element_by_xpath("//div[@class='game_header_image_ctn']/img[@class='game_header_image_full']")
             self.url_game_image = url_image.get_attribute("src")
         except: 
             self.url_game_image = ""
+        
+        try:
+            game_review = self.driver.find_element_by_xpath("//div[@class='summary column']/span")
+            self.game_review =game_review.get_attribute("class")
+        except:
+            self.game_review = ""
     
+    def ParseInfoReview(self):
+        #game_review_summary positive = Extremamente positivas | Ligeiramente positivas | Muito positivas
+        #game_review_summary mixed = Neutras
+        #game_review_summary = Ligeiramente negativas
+
+        regex = "positive|mixed"
+        regex = re.compile(rf"{regex}",flags=re.I)
+        find = regex.search(self.game_review)
+
+        if(find):
+            review = regex.findall(self.game_review)[0]
+            self.game_review = review
+        else:
+            print(self.game_review)
+            self.game_review = "negative"
+            
     def ParseInfoSpace(self):
         if(self.url_steam_bool == False):
             
@@ -176,11 +202,12 @@ class OpenGameLink:
         if(self.have_game == 1):
             url_path = f"text\games\{name_file}.txt"
         else:
-            url_path = f"text\whitlist\{name_file}.tex"
+            url_path = f"text\wishlist \{name_file}.txt"
         OpenGameLinkInfo = open(url_path,"w",encoding="UTF-8")
         
         OpenGameLinkInfo.writelines(self.game_name)
         OpenGameLinkInfo.writelines(f"\n{self.requirements}")
         OpenGameLinkInfo.writelines(f"\nDLC : {self.game_dlc}")
         OpenGameLinkInfo.writelines(f"\nUrl Image: {self.url_game_image}")
+        OpenGameLinkInfo.writelines(f"\nReview: {self.game_review}")
         OpenGameLinkInfo.close()
