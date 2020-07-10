@@ -202,7 +202,7 @@ class OpenGameLink:
         if(self.have_game == 1):
             url_path = f"text\games\{name_file}.txt"
         else:
-            url_path = f"text\wishlist \{name_file}.txt"
+            url_path = f"text\wishlist\{name_file}.txt"
         OpenGameLinkInfo = open(url_path,"w",encoding="UTF-8")
         
         OpenGameLinkInfo.writelines(self.game_name)
