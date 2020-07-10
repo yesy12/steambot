@@ -1,35 +1,42 @@
 from functions.SteamBot_Have import SteamBot_Have
 from functions.OpenGameLink import OpenGameLink
 
-urls_games_steam = open("text/steamlink_have.txt","r")
+def steam_have(url_steam_have):
+    steam = SteamBot_Have(url_steam_have)
+    steam.OpenBrowser()
+    steam.GetLink()
+    steam.CountLinks()
+    steam.SaveLinks()
+    steam.CloseBrowser()
+
+def steam_games_have(path_url_games_steam):
+    
+    urls_games_steam = open(path_url_games_steam,"r")
+
+    for url_game_steam in urls_games_steam:
+        if(url_game_steam != "\n"):
+            openGame = OpenGameLink(url_game_steam,1)
+            openGame.OpenBrowser()
+            openGame.VerifyLink()
+            openGame.GetInfo()
+            openGame.ParseInfoSpace()
+            openGame.SaveInfo()
+            openGame.CloseBrowser()
+    
+def steam_games_have_unit(url_game):
+    openGame = OpenGameLink(url_game,1)
+    openGame.OpenBrowser()
+    openGame.VerifyLink()
+    openGame.GetInfo()
+    openGame.ParseInfoSpace()
+    openGame.ParseInfoReview()
+    openGame.SaveInfo()
+    openGame.CloseBrowser()
 
 # url_steam = "https://steamcommunity.com/id/ahsj4/games/?tab=all&sort=name"
-# steam = SteamBot_Have(url_steam)
-# steam.OpenBrowser()
-# steam.GetLink()
-# steam.CountLinks()
-# steam.SaveLinks()
-# steam.CloseBrowser()
+# steam_have(url_steam)
 
-# i = 1
-# for url_game_steam in urls_games_steam:
-    # if(url_game_steam != "\n"):
-        # openGame = OpenGameLink(url_game_steam,1)
-        # openGame.OpenBrowser()
-        # print(f"Index:0{i} Link: {url_game_steam}")
-        # openGame.VerifyLink()
-        # openGame.GetInfo()
-        # openGame.ParseInfoSpace()
-        # openGame.SaveInfo()
-        # openGame.CloseBrowser()
-        # i+=1
-    
+# steam_games_have("text/steamlink_have.txt")
+
 # url_game = "https://store.steampowered.com/app/57300"
-# openGame = OpenGameLink(url_game,1)
-# openGame.OpenBrowser()
-# openGame.VerifyLink()
-# openGame.GetInfo()
-# openGame.ParseInfoSpace()
-# openGame.ParseInfoReview()
-# openGame.SaveInfo()
-# openGame.CloseBrowser()
+# steam_games_have_unit(url_game)

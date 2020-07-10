@@ -107,13 +107,16 @@ class OpenGameLink:
         
         try:
             game_review = self.driver.find_element_by_xpath("//div[@class='summary column']/span")
-            self.game_review =game_review.get_attribute("class")
+            self.game_review = game_review.get_attribute("class")
         except:
             self.game_review = ""
-    
+
         if(self.have_game == 0):
-            price = self.driver.find_element_by_xpath("//div[@class='game_purchase_price price']")
-            self.price = price.text
+            try:
+                price = self.driver.find_element_by_xpath("//div[@class='game_purchase_price price']")
+                self.price = price.text
+            except:
+                self.price = self.driver.find_element_by_xpath("//div[@class='game_area_comingsoon game_area_bubble']/div[@class='content']/h1").text
     
     def ParseInfoReview(self):
         #game_review_summary positive = Extremamente positivas | Ligeiramente positivas | Muito positivas
@@ -127,8 +130,9 @@ class OpenGameLink:
         if(find):
             review = regex.findall(self.game_review)[0]
             self.game_review = review
+        elif(self.game_review == ""):
+            self.game_review = "in soon"
         else:
-            print(self.game_review)
             self.game_review = "negative"
             
     def ParseInfoSpace(self):
