@@ -20,6 +20,7 @@ class OpenGameLink:
         self.requirements_minimum = ""
         self.requirements_recomend = ""
         self.have_game = have_game
+        self.url_game_image = ""
         
     def OpenBrowser(self):
         self.driver.get(self.url_game)
@@ -93,6 +94,11 @@ class OpenGameLink:
         except:
             self.requirements_minimum = self.driver.find_element_by_xpath("//div[@class='game_area_sys_req_full']/ul/ul[@class='bb_ul']").text  
             self.requirements_recomend = ""          
+        try:
+            url_image = self.driver.find_element_by_xpath("//div[@class='game_header_image_ctn']/img[@class='game_header_image_full']")
+            self.url_game_image = url_image.get_attribute("src")
+        except: 
+            self.url_game_image = ""
     
     def ParseInfoSpace(self):
         if(self.url_steam_bool == False):
@@ -162,9 +168,7 @@ class OpenGameLink:
                     self.requirements = requirements_recomend
             else:
                 self.requirements = requirements_minimum    
-                
-
-          
+                     
     def SaveInfo(self):
         regex = "[0-9]+"
         name_file = re.findall(rf"{regex}",self.url_game)[0]
@@ -175,10 +179,8 @@ class OpenGameLink:
             url_path = f"text\whitlist\{name_file}.tex"
         OpenGameLinkInfo = open(url_path,"w",encoding="UTF-8")
         
-        OpenGameLinkInfo.writelines(self.game_name+"\n")
-        OpenGameLinkInfo.writelines("\n")
-        OpenGameLinkInfo.writelines(self.requirements)
-        OpenGameLinkInfo.writelines("\n")
-        OpenGameLinkInfo.writelines(f"DLC : {self.game_dlc}")
-        
+        OpenGameLinkInfo.writelines(self.game_name)
+        OpenGameLinkInfo.writelines(f"\n{self.requirements}")
+        OpenGameLinkInfo.writelines(f"\nDLC : {self.game_dlc}")
+        OpenGameLinkInfo.writelines(f"\nUrl Image: {self.url_game_image}")
         OpenGameLinkInfo.close()

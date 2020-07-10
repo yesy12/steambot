@@ -24,7 +24,7 @@ urls_games_steam = open("text/steamlink_have.txt","r")
 #     i+=1
     
 url_game = "https://store.steampowered.com/app/57300"
-openGame = OpenGameLink(url_game,1)
+openGame = OpenGameLink(url_game,0)
 openGame.OpenBrowser()
 openGame.VerifyLink()
 openGame.GetInfo()
