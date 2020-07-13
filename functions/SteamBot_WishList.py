@@ -20,21 +20,22 @@ class SteamBot_WishList:
         self.driver.close()
         
     def GetLinks(self):
-        sleep(5)
+        pre = self.driver.find_element_by_xpath("//pre").text
 
-        links_wishList = self.driver.find_elements_by_xpath("//div[@class='wishlist_row']/div[@class='content']/a[@class='title']")
-    
-        regex = "htt.+store.+/app/[0-9]+"
-        
-        for link_wishList in links_wishList:
-            link = link_wishList.get_attribute("href")
-            link = findall(rf"{regex}",link)[0]
+        appids = findall(r"[0-9]+.:",pre)
+        for appid in appids:
+            appid_ = findall(r"[0-9]+",appid)[0]
+            link = f"https://store.steampowered.com/app/{appid_}"
             self.links.append(link)
+       
+        # doc = self.driver.page_source
+        
+        
             
     def SaveLinks(self):
-        steamlink_wishList = open("text\steamlink_wishlist.txt","w")
+        steamlink_wishList = open("text\steamlink_wishlist.txt","a+")
         
         for link in self.links:
-            steamlink_wishList.write(f"\n{link}")
+            steamlink_wishList.writelines(f"\n{link}")
             
         steamlink_wishList.close()

@@ -38,11 +38,13 @@ def steam_games_wishList_unit(url_game):
 # url_game = "https://store.steampowered.com/app/514900/"
 
 # url_steam_wishlist = "https://store.steampowered.com/wishlist/profiles/76561198208574821/#sort=name"
-# url_steam_wishlist = "https://store.steampowered.com/wishlist/id/yesy12/#sort=name"
-# steam_games_wishList(url_steam_wishlist)
+
+# for i in range(0,3):
+#     url_steam_wishlist = f"https://store.steampowered.com/wishlist/profiles/76561198238225740/wishlistdata/?p={i}"
+#     steam_wishList(url_steam_wishlist)
 
 
-# steam_games_wishList("text/steamlink_wishlist.txt")
+steam_games_wishList("text/steamlink_wishlist.txt")
 
-url_steam_wishlist = "https://store.steampowered.com/app/897730/"
-steam_games_wishList_unit(url_steam_wishlist)
+# url_steam_wishlist = "https://store.steampowered.com/app/70/"
+# steam_games_wishList_unit(url_steam_wishlist)

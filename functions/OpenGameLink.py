@@ -81,43 +81,57 @@ class OpenGameLink:
             self.game_review = ""
             return 
         
+        #gameIsDlc
         try:
             gameIsDlc = self.driver.find_element_by_xpath("//div[@class='game_area_bubble game_area_dlc_bubble ']")
             self.game_dlc = True
         except:
             self.game_dlc = False
         
+        #gameName
         try:
             self.game_name = self.driver.find_element_by_xpath("//div[@class='apphub_AppName']").text
         except:
             self.game_name = f"Failed: {self.url_game}"
-                
+           
+        #requirements     
         try:
             self.requirements_minimum = self.driver.find_element_by_xpath("//div[@class='game_area_sys_req_leftCol']/ul/ul[@class='bb_ul']").text
             self.requirements_recomend = self.driver.find_element_by_xpath("//div[@class='game_area_sys_req_rightCol']/ul/ul[@class='bb_ul']").text
         except:
-            self.requirements_minimum = self.driver.find_element_by_xpath("//div[@class='game_area_sys_req_full']/ul/ul[@class='bb_ul']").text  
-            self.requirements_recomend = ""          
+            try:
+                self.requirements_minimum = self.driver.find_element_by_xpath("//div[@class='game_area_sys_req_full']/ul/ul[@class='bb_ul']").text  
+                self.requirements_recomend = ""          
+            except:
+                self.requirements_minimum = self.driver.find_element_by_xpath("//div[@class='game_area_sys_req_full']/ul").text
+                self.requirements_recomend = ""
         
+        #url_image
         try:
             url_image = self.driver.find_element_by_xpath("//div[@class='game_header_image_ctn']/img[@class='game_header_image_full']")
             self.url_game_image = url_image.get_attribute("src")
         except: 
             self.url_game_image = ""
         
+        #review
         try:
             game_review = self.driver.find_element_by_xpath("//div[@class='summary column']/span")
             self.game_review = game_review.get_attribute("class")
         except:
             self.game_review = ""
 
+        #price
         if(self.have_game == 0):
             try:
                 price = self.driver.find_element_by_xpath("//div[@class='game_purchase_price price']")
                 self.price = price.text
             except:
-                self.price = self.driver.find_element_by_xpath("//div[@class='game_area_comingsoon game_area_bubble']/div[@class='content']/h1").text
-    
+                try:
+                    self.price = self.driver.find_element_by_xpath("//div[@class='game_area_comingsoon game_area_bubble']/div[@class='content']/h1").text
+                except:
+                    self.price = ""
+                    
+                    
     def ParseInfoReview(self):
         #game_review_summary positive = Extremamente positivas | Ligeiramente positivas | Muito positivas
         #game_review_summary mixed = Neutras
@@ -146,72 +160,84 @@ class OpenGameLink:
             
             #PART 1
             
-            regex = "[a-z]+[a-z][oe]:.*[0-9]+.[gm]b|drive: [0-9][gm]b"
+            regex = "[a-z]*[tcv][eo]:.*[gm]b"
+            # regex = "[a-z]+[a-z][oe]:.*[0-9]+.[gm]b|drive: [0-9][gm]b"
             regex = re.compile(rf"{regex}",flags=re.I)
             # Armazenamento:5 GB | Armazenamento: 5GB | Armazenamento: 5 GB
             # Hard Drive:2 GB | # Hard Drive: 15MB | # Hard Drive: 15 MB
             # Hard Disk Space:6 GB | Hard Disk Space: 6GB |  Hard Disk Space: 6 GB
-            
-            requirements_minimum = regex.findall(self.requirements_minimum)[0] #Armazenamento: 5 GB
-            if(self.requirements_recomend != ""):
-                try:
-                    requirements_recomend = regex.findall(self.requirements_recomend)[0] #Armazenamento: 5 GB
-                except:
-                    requirements_recomend = ""        
+            try:
+                requirements_minimum = regex.findall(self.requirements_minimum)[0] #Armazenamento: 5 GB
+                if(self.requirements_recomend != ""):
+                    try:
+                        requirements_recomend = regex.findall(self.requirements_recomend)[0] #Armazenamento: 5 GB
+                    except:
+                        requirements_recomend = ""      
+            except:  
+                requirements_minimum = ""
             #PART 2
             
             regex = "[0-9]+[ ]*[gm]b"
             regex = re.compile(rf"{regex}",flags=re.I)
             # 5 GB | 5GB 
             # 500 MB | 500MB
-            
-            requirements_minimum = regex.findall(requirements_minimum)[0] #5 GB
-            if(self.requirements_recomend != ""):
-                try:
-                    requirements_recomend = regex.findall(requirements_recomend)[0] #5 GB
-                except:
-                    requirements_recomend = ""
+            try:
+                requirements_minimum = regex.findall(requirements_minimum)[0] #5 GB
+                if(self.requirements_recomend != ""):
+                    try:
+                        requirements_recomend = regex.findall(requirements_recomend)[0] #5 GB
+                    except:
+                        requirements_recomend = ""
+            except:
+                requirements_minimum = ""
+                
                 
             #PART 3
 
             regex = "[GM]B"
             regex = re.compile(rf"{regex}",flags=re.I)
             #GB | MB
-
-            requirements_minimum_unit = regex.findall(requirements_minimum)[0] #GB
-            if(self.requirements_recomend != ""):
-                try:
-                    requirements_recomend_unit = regex.findall(requirements_recomend)[0] #GB
-                except:
-                    requirements_recomend_unit = ""
-                            
-            if(requirements_minimum_unit == "GB"):
-                requirements_minimum_bool_gb = True
-            if(requirements_recomend_unit == "GB"):
-                requirements_recomend_bool_gb = True
-            
+            try:
+                requirements_minimum_unit = regex.findall(requirements_minimum)[0] #GB
+                if(self.requirements_recomend != ""):
+                    try:
+                        requirements_recomend_unit = regex.findall(requirements_recomend)[0] #GB
+                    except:
+                        requirements_recomend_unit = ""
+                                
+                if(requirements_minimum_unit == "GB"):
+                    requirements_minimum_bool_gb = True
+                if(requirements_recomend_unit == "GB"):
+                    requirements_recomend_bool_gb = True
+            except:
+                requirements_minimum = ""
+                
             #PART 4
-            
-            if(self.requirements_recomend != ""):
-                if(requirements_minimum_bool_gb == requirements_recomend_bool_gb):
-                    regex = "[0-9]*"
-                    regex = re.compile(rf"{regex}")
-                    
-                    requirements_minimum_int = int(regex.findall(requirements_minimum)[0]) #5
-                    requirements_recomend_int = int(regex.findall(requirements_recomend)[0]) #5
-                    
-                    if(requirements_minimum_int == requirements_recomend_int):
+            try:
+                if(self.requirements_recomend != ""):
+                    if(requirements_minimum_bool_gb == requirements_recomend_bool_gb):
+                        regex = "[0-9]*"
+                        regex = re.compile(rf"{regex}")
+                        
+                        requirements_minimum_int = int(regex.findall(requirements_minimum)[0]) #5
+                        requirements_recomend_int = int(regex.findall(requirements_recomend)[0]) #5
+                        
+                        if(requirements_minimum_int == requirements_recomend_int):
+                            self.requirements = requirements_minimum
+                        elif(requirements_recomend_int > requirements_minimum_int):
+                            self.requirements = requirements_recomend
+                        
+                    elif(requirements_minimum_bool_gb == True):
                         self.requirements = requirements_minimum
-                    elif(requirements_recomend_int > requirements_minimum_int):
+                    elif(requirements_recomend_bool_gb == True):
                         self.requirements = requirements_recomend
-                    
-                elif(requirements_minimum_bool_gb == True):
-                    self.requirements = requirements_minimum
-                elif(requirements_recomend_bool_gb == True):
-                    self.requirements = requirements_recomend
-            else:
-                self.requirements = requirements_minimum    
-                     
+                elif(requirements_minimum == ""):
+                    self.requirements = f"FAILED GB: {self.url_game}"
+                else:
+                    self.requirements = requirements_minimum    
+            except:
+                self.requirements = f"FAILED GB: {self.url_game}"
+            
     def SaveInfo(self):
         regex = "[0-9]+"
         name_file = re.findall(rf"{regex}",self.url_game)[0]

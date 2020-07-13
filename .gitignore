@@ -1,4 +1,5 @@
 text/
 tutorial/
-__pycache__
+functions/__pycache__
 debug.log
+teste.*
