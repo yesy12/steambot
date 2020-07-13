@@ -68,11 +68,25 @@ class OpenGameLink:
         else:
             self.url_steam_bool = False
     
+    def GameIgnoreName(self,name_game)->bool:
+        ignore_game = open("text\ignore.txt","r")
+        
+        regex = re.compile(rf"{name_game}",flags=re.I)
+        for line in ignore_game:
+            info = regex.findall(line)
+            if(len(info)>0):
+                ignore_game.close()
+                return True
+
+        ignore_game.close()
+        return False
+    
     def GetInfo(self):
         self.SetAge()
         sleep(1)
         self.VerifyPage()
         sleep(1)
+        
         
         if(self.url_steam_bool == True):
             self.game_name = f"Failed: {self.url_game}"
@@ -93,7 +107,11 @@ class OpenGameLink:
             self.game_name = self.driver.find_element_by_xpath("//div[@class='apphub_AppName']").text
         except:
             self.game_name = f"Failed: {self.url_game}"
-           
+        
+        ignore_game = self.GameIgnoreName(self.game_name)
+        if(ignore_game):
+            return
+        
         #requirements     
         try:
             self.requirements_minimum = self.driver.find_element_by_xpath("//div[@class='game_area_sys_req_leftCol']/ul/ul[@class='bb_ul']").text
