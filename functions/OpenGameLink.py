@@ -121,9 +121,12 @@ class OpenGameLink:
                 self.requirements_minimum = self.driver.find_element_by_xpath("//div[@class='game_area_sys_req_full']/ul/ul[@class='bb_ul']").text  
                 self.requirements_recomend = ""          
             except:
-                self.requirements_minimum = self.driver.find_element_by_xpath("//div[@class='game_area_sys_req_full']/ul").text
-                self.requirements_recomend = ""
-        
+                try:
+                    self.requirements_minimum = self.driver.find_element_by_xpath("//div[@class='game_area_sys_req_full']/ul").text
+                    self.requirements_recomend = ""
+                except:
+                    self.requirements_minimum = ""
+                    self.requirements_recomend = ""
         #url_image
         try:
             url_image = self.driver.find_element_by_xpath("//div[@class='game_header_image_ctn']/img[@class='game_header_image_full']")
