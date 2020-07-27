@@ -1,28 +1,46 @@
 from selenium import webdriver
 from selenium.webdriver.support.select import Select
 from time import sleep
+from datetime import datetime
+from pymongo import MongoClient
+# from .InfoDb import InfoDb
 import re
+
 
 class OpenGameLink:
     
     def __init__ (self,url_game,have_game=1):
         options = webdriver.ChromeOptions()
         options.add_argument("lang=pt-br")
-        url_drive = executable_path=r"./../../driver/chromedriver.exe"
+        url_drive = executable_path=r"./../../../driver/chromedriver.exe"
+        
+        # info = InfoDb()
+        
+        username = "info.getUsername()"
+        password = "info.getPassword()"
+        dbName = "info.getDbName()"
+        url = f"mongodb+srv://{username}:{password}@cluster0-nth3w.mongodb.net/{dbName}?retryWrites=true&w=majority"
+        
+        client = MongoClient(url)
+        db = client["gamesBotSave"]
+        
+        self.games = db.gamesBotSave
         
         self.driver = webdriver.Chrome(url_drive)
         self.url_game = url_game
         self.agecheck = False
-        self.game_name = ""
-        self.requirements = ""
+        self.title = ""
+        self.space = ""
+        self.unity = ""
         self.game_dlc = False
         self.url_steam_bool = False
-        self.requirements_minimum = ""
+        self.requirements_minimum = 0
         self.requirements_recomend = ""
         self.have_game = have_game
-        self.url_game_image = ""
-        self.game_review = ""
+        self.urlGameImage = ""
+        self.gameReview = ""
         self.price = ""
+        
         
     def OpenBrowser(self):
         self.driver.get(self.url_game)
@@ -60,13 +78,12 @@ class OpenGameLink:
             }
             """
     
-    def VerifyPage(self):
+    def VerifyPage(self)->bool:
         current_url = self.driver.current_url
         url_steam = "https://store.steampowered.com/"
         if(current_url == url_steam):
             self.url_steam_bool = True
-        else:
-            self.url_steam_bool = False
+        return self.url_steam_bool
     
     def GameIgnoreName(self,name_game)->bool:
         ignore_game = open("text\ignore.txt","r")
@@ -84,15 +101,14 @@ class OpenGameLink:
     def GetInfo(self):
         self.SetAge()
         sleep(1)
-        self.VerifyPage()
-        sleep(1)
         
-        
-        if(self.url_steam_bool == True):
-            self.game_name = f"Failed: {self.url_game}"
-            self.requirements_minimum = f"FAILED: {self.url_game}"
-            self.url_game_image = ""
-            self.game_review = ""
+        if(self.VerifyPage() == True):
+            self.title = ""
+            self.space = 0
+            self.unity = "QB"
+            self.urlGameImage = ""
+            self.gameReview = ""
+            self.price = ""
             return 
         
         #gameIsDlc
@@ -102,17 +118,17 @@ class OpenGameLink:
         except:
             self.game_dlc = False
         
-        #gameName
+        #gameTitle
         try:
-            self.game_name = self.driver.find_element_by_xpath("//div[@class='apphub_AppName']").text
+            self.title = self.driver.find_element_by_xpath("//div[@class='apphub_AppName']").text
         except:
-            self.game_name = f"Failed: {self.url_game}"
+            self.title = ""
         
-        ignore_game = self.GameIgnoreName(self.game_name)
+        ignore_game = self.GameIgnoreName(self.title)
         if(ignore_game):
             return
         
-        #requirements     
+        #space     
         try:
             self.requirements_minimum = self.driver.find_element_by_xpath("//div[@class='game_area_sys_req_leftCol']/ul/ul[@class='bb_ul']").text
             self.requirements_recomend = self.driver.find_element_by_xpath("//div[@class='game_area_sys_req_rightCol']/ul/ul[@class='bb_ul']").text
@@ -127,19 +143,20 @@ class OpenGameLink:
                 except:
                     self.requirements_minimum = ""
                     self.requirements_recomend = ""
+        
         #url_image
         try:
             url_image = self.driver.find_element_by_xpath("//div[@class='game_header_image_ctn']/img[@class='game_header_image_full']")
-            self.url_game_image = url_image.get_attribute("src")
+            self.urlGameImage = url_image.get_attribute("src")
         except: 
-            self.url_game_image = ""
+            self.urlGameImage = ""
         
         #review
         try:
-            game_review = self.driver.find_element_by_xpath("//div[@class='summary column']/span")
-            self.game_review = game_review.get_attribute("class")
+            gameReview = self.driver.find_element_by_xpath("//div[@class='summary column']/span")
+            self.gameReview = gameReview.get_attribute("class")
         except:
-            self.game_review = ""
+            self.gameReview = ""
 
         #price
         if(self.have_game == 0):
@@ -151,8 +168,7 @@ class OpenGameLink:
                     self.price = self.driver.find_element_by_xpath("//div[@class='game_area_comingsoon game_area_bubble']/div[@class='content']/h1").text
                 except:
                     self.price = ""
-                    
-                    
+                          
     def ParseInfoReview(self):
         #game_review_summary positive = Extremamente positivas | Ligeiramente positivas | Muito positivas
         #game_review_summary mixed = Neutras
@@ -160,24 +176,22 @@ class OpenGameLink:
 
         regex = "positive|mixed"
         regex = re.compile(rf"{regex}",flags=re.I)
-        find = regex.search(self.game_review)
+        find = regex.search(self.gameReview)
 
         if(find):
-            review = regex.findall(self.game_review)[0]
-            self.game_review = review
-        elif(self.game_review == ""):
-            self.game_review = "in soon"
+            review = regex.findall(self.gameReview)[0]
+            self.gameReview = review
+        elif(self.gameReview == ""):
+            self.gameReview = "in soon"
         else:
-            self.game_review = "negative"
+            self.gameReview = "negative"
             
     def ParseInfoSpace(self):
-        if(self.url_steam_bool == False):
-            
-            requirements_minimum = ""
-            requirements_minimum_bool_gb = False
-            requirements_recomend_bool_gb = False
-            
-            requirements_recomend_unit = ""
+        if(self.VerifyPage() == False):
+            requirements_minimum_unity = ""
+            requirements_recomend_unity = ""
+            requirements_minimum_space = 0
+            requirements_recomend_space = 0
             
             #PART 1
             
@@ -187,30 +201,36 @@ class OpenGameLink:
             # Armazenamento:5 GB | Armazenamento: 5GB | Armazenamento: 5 GB
             # Hard Drive:2 GB | # Hard Drive: 15MB | # Hard Drive: 15 MB
             # Hard Disk Space:6 GB | Hard Disk Space: 6GB |  Hard Disk Space: 6 GB
+            
             try:
-                requirements_minimum = regex.findall(self.requirements_minimum)[0] #Armazenamento: 5 GB
+                self.requirements_minimum = regex.findall(self.requirements_minimum) #Armazenamento: 5 GB
+                self.requirements_minimum = self.requirements_minimum[0]
+                
                 if(self.requirements_recomend != ""):
                     try:
-                        requirements_recomend = regex.findall(self.requirements_recomend)[0] #Armazenamento: 5 GB
+                        self.requirements_recomend = regex.findall(self.requirements_recomend)[0] #Armazenamento: 5 GB
                     except:
-                        requirements_recomend = ""      
+                        self.requirements_recomend = ""      
             except:  
-                requirements_minimum = ""
+                self.requirements_minimum = ""
+            
             #PART 2
             
             regex = "[0-9]+[ ]*[gm]b"
             regex = re.compile(rf"{regex}",flags=re.I)
             # 5 GB | 5GB 
             # 500 MB | 500MB
+ 
             try:
-                requirements_minimum = regex.findall(requirements_minimum)[0] #5 GB
+                self.requirements_minimum = regex.findall(self.requirements_minimum)[0] #5 GB
+                
                 if(self.requirements_recomend != ""):
                     try:
-                        requirements_recomend = regex.findall(requirements_recomend)[0] #5 GB
+                        self.requirements_recomend = regex.findall(self.requirements_recomend)[0] #5 GB
                     except:
-                        requirements_recomend = ""
+                        self.requirements_recomend = ""
             except:
-                requirements_minimum = ""
+                self.requirements_minimum = ""
                 
                 
             #PART 3
@@ -218,63 +238,70 @@ class OpenGameLink:
             regex = "[GM]B"
             regex = re.compile(rf"{regex}",flags=re.I)
             #GB | MB
+            
+            
             try:
-                requirements_minimum_unit = regex.findall(requirements_minimum)[0] #GB
+                requirements_minimum_unity = regex.findall(self.requirements_minimum)[0] #GB
+
                 if(self.requirements_recomend != ""):
                     try:
-                        requirements_recomend_unit = regex.findall(requirements_recomend)[0] #GB
+                        requirements_recomend_unity = regex.findall(self.requirements_recomend)[0] #GB
                     except:
-                        requirements_recomend_unit = ""
-                                
-                if(requirements_minimum_unit == "GB"):
-                    requirements_minimum_bool_gb = True
-                if(requirements_recomend_unit == "GB"):
-                    requirements_recomend_bool_gb = True
+                        requirements_recomend_unity = ""
             except:
-                requirements_minimum = ""
+                requirements_minimum_unity = ""
+                
                 
             #PART 4
+            regex = "[0-9]*"
+            regex = re.compile(rf"{regex}")
+                
+            requirements_minimum_space = int(regex.findall(self.requirements_minimum)[0]) #5
+                
             try:
-                if(self.requirements_recomend != ""):
-                    if(requirements_minimum_bool_gb == requirements_recomend_bool_gb):
-                        regex = "[0-9]*"
-                        regex = re.compile(rf"{regex}")
-                        
-                        requirements_minimum_int = int(regex.findall(requirements_minimum)[0]) #5
-                        requirements_recomend_int = int(regex.findall(requirements_recomend)[0]) #5
-                        
-                        if(requirements_minimum_int == requirements_recomend_int):
-                            self.requirements = requirements_minimum
-                        elif(requirements_recomend_int > requirements_minimum_int):
-                            self.requirements = requirements_recomend
-                        
-                    elif(requirements_minimum_bool_gb == True):
-                        self.requirements = requirements_minimum
-                    elif(requirements_recomend_bool_gb == True):
-                        self.requirements = requirements_recomend
-                elif(requirements_minimum == ""):
-                    self.requirements = f"FAILED GB: {self.url_game}"
-                else:
-                    self.requirements = requirements_minimum    
+                requirements_recomend_space = int(regex.findall(self.requirements_recomend)[0]) #5
             except:
-                self.requirements = f"FAILED GB: {self.url_game}"
+                requirements_recomend_space = 0
+                            
+            if(requirements_minimum_unity == requirements_recomend_unity):# GB and GB # MB and MB
+                    
+                if(requirements_minimum_space >= requirements_recomend_space):
+                    self.space = requirements_minimum_space
+                    self.unity = requirements_minimum_unity
+                        
+                elif(requirements_recomend_space > requirements_minimum_space):
+                    self.space = requirements_recomend_space
+                    self.unity = requirements_recomend_unity
             
+            elif(requirements_minimum_unity == "GB"): # only GB or GB and MB
+                self.space = requirements_minimum_space
+                self.unity = requirements_minimum_unity
+                
+            elif(requirements_recomend_unity == "GB"): # only GB or GB and MB
+                self.space = requirements_recomend_space
+                self.unity = requirements_recomend_unity
+                
+            elif(requirements_minimum_unity == "MB"): # MB only
+                self.space = requirements_minimum_space
+                self.unity = requirements_minimum_unity 
+                
+            elif(requirements_recomend_unity == "MB"): # MB only
+                self.space = requirements_recomend_space
+                self.unity = requirements_recomend_unity                
+
     def SaveInfo(self):
-        regex = "[0-9]+"
-        name_file = re.findall(rf"{regex}",self.url_game)[0]
-        url_path = ""
-        if(self.have_game == 1):
-            url_path = f"text\games\{name_file}.txt"
-        else:
-            url_path = f"text\wishlist\{name_file}.txt"
-        OpenGameLinkInfo = open(url_path,"w",encoding="UTF-8")
         
-        OpenGameLinkInfo.writelines(self.game_name)
-        OpenGameLinkInfo.writelines(f"\n{self.requirements}")
-        OpenGameLinkInfo.writelines(f"\nDLC : {self.game_dlc}")
-        OpenGameLinkInfo.writelines(f"\nUrl Image: {self.url_game_image}")
-        OpenGameLinkInfo.writelines(f"\nReview: {self.game_review}")
+        games_data = {
+            "title": self.title,
+            "space": self.space,
+            "unity": self.unity,
+            "dlc ": self.game_dlc,
+            "plataform": "steam",
+            "urlGame": self.url_game,
+            "urlImagem": self.urlGameImage,
+            "review": self.gameReview,
+            "price" : self.price,
+            "dateCreation": datetime.utcnow()
+        }
         
-        if(self.have_game == 0):
-            OpenGameLinkInfo.writelines(f"\nPrice: {self.price}")
-        OpenGameLinkInfo.close()
+        result = self.games.insert_one(games_data)

@@ -31,7 +31,7 @@ def steam_games_wishList_unit(url_game):
     openGame.GetInfo()
     openGame.ParseInfoSpace()
     openGame.ParseInfoReview()
-    openGame.SaveInfo()
+    # openGame.SaveInfo()
     openGame.CloseBrowser()
 
 
@@ -44,8 +44,8 @@ def steam_games_wishList_unit(url_game):
 #     steam_wishList(url_steam_wishlist)
 
 
-steam_games_wishList("text/steamlink_wishlist.txt")
+# steam_games_wishList("text/steamlink_wishlist.txt")
 
 # url_steam_wishlist = "https://store.steampowered.com/app/70/"
-# url_steam_wishlist = "https://store.steampowered.com/app/1091500"
-# steam_games_wishList_unit(url_steam_wishlist)
+url_steam_wishlist = "https://store.steampowered.com/app/220"
+steam_games_wishList_unit(url_steam_wishlist)
