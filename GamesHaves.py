@@ -5,7 +5,7 @@ def steam_have(url_steam_have):
     steam = SteamBot_Have(url_steam_have)
     steam.OpenBrowser()
     steam.GetLink()
-    steam.CountLinks()
+    # steam.CountLinks()
     steam.SaveLinks()
     steam.CloseBrowser()
 
@@ -34,7 +34,8 @@ def steam_games_have_unit(url_game):
     openGame.CloseBrowser()
 
 # url_steam = "https://steamcommunity.com/id/ahsj4/games/?tab=all&sort=name"
-# steam_have(url_steam)
+url_steam = "https://steamcommunity.com/id/yesy12/games/?tab=all&sort=name"
+steam_have(url_steam)
 
 # steam_games_have("text/steamlink_have.txt")
 
